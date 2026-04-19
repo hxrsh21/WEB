@@ -35,12 +35,7 @@
     .tagline {
       margin-top: 20px;
       font-size: 20px;
-      opacity: 0;
-      animation: fadeIn 2s forwards;
-    }
-
-    @keyframes fadeIn {
-      to { opacity: 1; }
+      min-height: 30px;
     }
 
     .enter-btn {
@@ -51,19 +46,29 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      font-weight: bold;
     }
 
     /* 🔹 Chat UI */
     .chat-container {
       display: none;
       width: 350px;
-      height: 500px;
+      height: 520px;
       background: white;
       border-radius: 10px;
       margin: 40px auto;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+
+    .chat-header {
+      background:#0084ff;
+      color:white;
+      padding:10px;
+      border-radius:10px 10px 0 0;
+      text-align:center;
+      font-weight:bold;
     }
 
     .chat-box {
@@ -122,27 +127,59 @@
 <!-- 🔹 Welcome Screen -->
 <div class="welcome" id="welcome">
   <div class="handshake">🤝</div>
+
+  <!-- Clothing stickers -->
+  <div style="font-size:40px; margin-top:10px;">
+    👕 👗 👟 🧢 👜
+  </div>
+
   <h1>Welcome to Our Shop</h1>
-  <div class="tagline">✨ Best Deals • Instant Support • Smart Shopping ✨</div>
+
+  <!-- Animated text -->
+  <div class="tagline" id="tagline"></div>
+
   <button class="enter-btn" onclick="enterChat()">Start Chat</button>
 </div>
 
 <!-- 🔹 Chat UI -->
 <div class="chat-container" id="chatUI">
+  
+  <div class="chat-header">
+    🛍️ Smart Shop Assistant
+  </div>
+
   <div class="chat-box" id="chat"></div>
 
   <div class="input-area">
-    <input type="text" id="msg" placeholder="Type your message..." />
+    <input type="text" id="msg" placeholder="Say hello 👋 or ask about products..." />
     <button onclick="sendMessage()">Send</button>
   </div>
 </div>
 
 <script>
+// 🔥 Animated Sale Text
+const text = "🔥 Flat 30% OFF on all clothing today!";
+let i = 0;
+
+function typeEffect() {
+  if (i < text.length) {
+    document.getElementById("tagline").innerHTML += text.charAt(i);
+    i++;
+    setTimeout(typeEffect, 50);
+  }
+}
+
+window.onload = typeEffect;
+
+// Enter Chat
 function enterChat() {
   document.getElementById("welcome").style.display = "none";
   document.getElementById("chatUI").style.display = "flex";
+
+  addMessage("Hi! 👋 Welcome to our shop. What are you looking for today? 👕👟", "bot");
 }
 
+// Send Message
 async function sendMessage() {
   let input = document.getElementById("msg");
   let message = input.value;
@@ -152,7 +189,7 @@ async function sendMessage() {
   addMessage(message, "user");
   input.value = "";
 
-  // Typing effect
+  // Typing animation
   addMessage("Typing...", "bot");
 
   let res = await fetch("http://localhost:5678/webhook/chatbot", {
@@ -172,6 +209,7 @@ async function sendMessage() {
   }, 800);
 }
 
+// Add message
 function addMessage(text, type) {
   let chat = document.getElementById("chat");
 
