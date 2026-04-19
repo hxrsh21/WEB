@@ -12,7 +12,6 @@
       background: #f0f2f5;
     }
 
-    /* 🔹 Welcome Screen */
     .welcome {
       height: 100vh;
       display: flex;
@@ -45,13 +44,11 @@
       font-weight: bold;
     }
 
-    /* 🔹 Chat UI FULL SCREEN */
     .chat-container {
       display: none;
       width: 100%;
       height: 100vh;
       background: white;
-      display: flex;
       flex-direction: column;
     }
 
@@ -118,27 +115,23 @@
       cursor: pointer;
     }
 
-    /* 📱 Mobile adjustments */
     @media (max-width: 600px) {
       .chat-header {
         font-size: 16px;
         padding: 12px;
       }
     }
-
   </style>
 </head>
 
 <body>
 
-<!-- 🔹 Welcome Screen -->
 <div class="welcome" id="welcome">
   <div class="handshake">🤝</div>
   <h1>Welcome to One-Sale-Point</h1>
   <button class="enter-btn" onclick="enterChat()">Start Chat</button>
 </div>
 
-<!-- 🔹 Chat UI -->
 <div class="chat-container" id="chatUI">
   
   <div class="chat-header">
@@ -148,7 +141,11 @@
   <div class="chat-box" id="chat"></div>
 
   <div class="input-area">
-    <input type="text" id="msg" placeholder="Say hello 👋 or ask about products..." />
+    <input 
+      type="text" 
+      id="msg" 
+      placeholder="Say hello 👋 or ask about products..."
+    />
     <button onclick="sendMessage()">Send</button>
   </div>
 </div>
@@ -163,34 +160,48 @@ function enterChat() {
   addMessage("Welcome to One-Sale-Point! 👋 How can I help you today?", "bot");
 }
 
+// 🔥 ENTER KEY SUPPORT (PC + Mobile)
+document.getElementById("msg").addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    sendMessage();
+  }
+});
+
 // Send Message
 async function sendMessage() {
   let input = document.getElementById("msg");
-  let message = input.value;
+  let message = input.value.trim();
 
   if (!message) return;
 
   addMessage(message, "user");
   input.value = "";
 
-  // Typing effect
   addMessage("Typing...", "bot");
 
-  let res = await fetch("http://localhost:5678/webhook/chatbot", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ message })
-  });
+  try {
+    let res = await fetch("http://localhost:5678/webhook/chatbot", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message })
+    });
 
-  let data = await res.json();
+    let data = await res.json();
 
-  setTimeout(() => {
+    setTimeout(() => {
+      let chat = document.getElementById("chat");
+      chat.lastChild.remove();
+      addMessage(data.reply, "bot");
+    }, 600);
+
+  } catch (e) {
     let chat = document.getElementById("chat");
     chat.lastChild.remove();
-    addMessage(data.reply, "bot");
-  }, 700);
+    addMessage("Server not reachable ❌", "bot");
+  }
 }
 
 // Add message
