@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Shop Assistant</title>
+  <title>One-Sale-Point</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     body {
@@ -32,12 +34,6 @@
       to { transform: rotate(10deg); }
     }
 
-    .tagline {
-      margin-top: 20px;
-      font-size: 20px;
-      min-height: 30px;
-    }
-
     .enter-btn {
       margin-top: 30px;
       padding: 12px 20px;
@@ -49,40 +45,40 @@
       font-weight: bold;
     }
 
-    /* 🔹 Chat UI */
+    /* 🔹 Chat UI FULL SCREEN */
     .chat-container {
       display: none;
-      width: 350px;
-      height: 520px;
+      width: 100%;
+      height: 100vh;
       background: white;
-      border-radius: 10px;
-      margin: 40px auto;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
     }
 
     .chat-header {
       background:#0084ff;
       color:white;
-      padding:10px;
-      border-radius:10px 10px 0 0;
+      padding:15px;
       text-align:center;
       font-weight:bold;
+      font-size:18px;
     }
 
     .chat-box {
       flex: 1;
       padding: 10px;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
     }
 
     .message {
-      padding: 8px 12px;
+      padding: 10px 14px;
       margin: 5px;
-      border-radius: 10px;
-      max-width: 70%;
+      border-radius: 12px;
+      max-width: 75%;
       animation: pop 0.3s ease;
+      word-wrap: break-word;
     }
 
     .user {
@@ -103,22 +99,33 @@
     .input-area {
       display: flex;
       border-top: 1px solid #ccc;
+      padding: 5px;
     }
 
     input {
       flex: 1;
-      padding: 10px;
+      padding: 12px;
       border: none;
       outline: none;
+      font-size: 16px;
     }
 
     button {
-      padding: 10px;
+      padding: 12px;
       background: #0084ff;
       color: white;
       border: none;
       cursor: pointer;
     }
+
+    /* 📱 Mobile adjustments */
+    @media (max-width: 600px) {
+      .chat-header {
+        font-size: 16px;
+        padding: 12px;
+      }
+    }
+
   </style>
 </head>
 
@@ -127,17 +134,7 @@
 <!-- 🔹 Welcome Screen -->
 <div class="welcome" id="welcome">
   <div class="handshake">🤝</div>
-
-  <!-- Clothing stickers -->
-  <div style="font-size:40px; margin-top:10px;">
-    👕 👗 👟 🧢 👜
-  </div>
-
-  <h1>Welcome to Our Shop</h1>
-
-  <!-- Animated text -->
-  <div class="tagline" id="tagline"></div>
-
+  <h1>Welcome to One-Sale-Point</h1>
   <button class="enter-btn" onclick="enterChat()">Start Chat</button>
 </div>
 
@@ -145,7 +142,7 @@
 <div class="chat-container" id="chatUI">
   
   <div class="chat-header">
-    🛍️ Smart Shop Assistant
+    🛍️ One-Sale-Point Assistant
   </div>
 
   <div class="chat-box" id="chat"></div>
@@ -157,26 +154,13 @@
 </div>
 
 <script>
-// 🔥 Animated Sale Text
-const text = "🔥 Flat 30% OFF on all clothing today!";
-let i = 0;
-
-function typeEffect() {
-  if (i < text.length) {
-    document.getElementById("tagline").innerHTML += text.charAt(i);
-    i++;
-    setTimeout(typeEffect, 50);
-  }
-}
-
-window.onload = typeEffect;
 
 // Enter Chat
 function enterChat() {
   document.getElementById("welcome").style.display = "none";
   document.getElementById("chatUI").style.display = "flex";
 
-  addMessage("Hi! 👋 Welcome to our shop. What are you looking for today? 👕👟", "bot");
+  addMessage("Welcome to One-Sale-Point! 👋 How can I help you today?", "bot");
 }
 
 // Send Message
@@ -189,7 +173,7 @@ async function sendMessage() {
   addMessage(message, "user");
   input.value = "";
 
-  // Typing animation
+  // Typing effect
   addMessage("Typing...", "bot");
 
   let res = await fetch("http://localhost:5678/webhook/chatbot", {
@@ -206,7 +190,7 @@ async function sendMessage() {
     let chat = document.getElementById("chat");
     chat.lastChild.remove();
     addMessage(data.reply, "bot");
-  }, 800);
+  }, 700);
 }
 
 // Add message
@@ -220,6 +204,7 @@ function addMessage(text, type) {
   chat.appendChild(msgDiv);
   chat.scrollTop = chat.scrollHeight;
 }
+
 </script>
 
 </body>
